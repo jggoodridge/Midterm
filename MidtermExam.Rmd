@@ -1,0 +1,549 @@
+---
+title: "Midterm Exam"
+author: "Janette Goodridge"
+date: "March 30, 2017"
+output:
+  word_document: default
+  html_document: default
+---
+
+1. In class we stated that the equilibrium price of a forward contract should behave according to the formula $F_{0} = S_{0}e^{rT}$. Demonstrate that this is true using the arbitrage principle. Assume that you are dealing with an investment asset that pays no dividends unless stated otherwise. Specifically, answer the following:
+
+  * (a) Suppose $F_{0} > S_{0}e^{rT}$. Does this imply an arbitrage opportunity? Explain.
+  
+      + Yes, it does.  The equation $F_{0} = S_{0}e^{rT}$ must hold true for no arbitrage opportunity to exist.  Because the forward price is greater than the future value of the spot price , you should buy the stock and short the forward.
+  
+  * (b) Now suppose $F_{0} < S_{0}e^{rT}$. Does this imply an arbitrage opportunity? Explain.
+  
+      + Yes, it does.  The equation $F_{0} = S_{0}e^{rT}$ must hold true for no arbitrage opportunity to exist.   Because the future value of the spot price is greater than the forward price, you should buy the forward and short the stock.  
+
+  * (c) Now assume that you are dealing with either a dividend paying asset in the form of discrete dollar dividend payments, or a continous dividend yield.  How does this change the pricing equation?  Explain.
+  
+     + The original pricing equation, $F_{0} = S_{0}e^{rT}$, is not valid in this case because the holder of the forward will not receive the dividends that will be paid to the holder of the stock.  Because of this, the pricing equation must be altered to the following:
+
+    + For a continous dividend yeild: $F_{0} = S_{0}e^{(r- \delta)T}$
+  
+    + For discrete dividends:   $F_{0} = S_{0}e^{rT} - \sum_{i=1}^n e^{r(T-t_i)} Dt_i$
+  
+  * (d) Now assume that you are dealing with a consumption commodity with storage  costs, and that holding the physical commodity has certain benefits (i.e. a convenience yield). How does this change the pricing equation? Explain.
+  
+    + In this case, there are two different equations that must be considered.  If you were going to borrow the commodity and buy the forward contract, (reverse cash and carry) the pricing equation would become:  $F_{0} = S_{0}e^{(r+ \lambda-c)T}$   
+    
+    + However, if you were to go long the commodity and short the forward, it would create a price range in which the forward must fall in order to indicate the absence of arbitrage: $S_{0}e^{(r+ \lambda-c)T} \le F_{0} \le S_{0}e^{(r+ \lambda)T}$
+    
+    + The reason the storage costs and the convenience yield must be in this equation is because there is value in both the storage costs and the possession of the physical inventory that can either be gained or lost depending on which type and which end of the contract you are entering into.   
+  
+  * (e) In class we argued that all of this depends upon the possibility of physical delivery of the contract, which guarantees that $F_{T} = S_{T}$, that is that the futures price at maturity is equal to the spot price at maturity. First, explain why that is. Second, what would happen if $F_{T} \ne S_{T}$? Carefully explain.
+  
+    + This must be true to ensure that there is no arbitrage. If $F_{T} \ne S_{T}$, there would be an arbitrage opportunity. If $F_{T} > S_{T}$, an investor would short the futures contract and buy the underlying asset until the opportunity was arbitraged away.  The opposite would be true if $F_{T} < S_{T}$.  
+    
+  * (f) Consider a new kind of forward contract called a prepaid forward. It is very similar to a standard forward contract. The only difference is that the long party pays the short party at time $t = 0$, but still takes delivery from the short party at $t = T$. How must the standard pricing formula be modified to properly price the prepaid forward? Carefully explain your logic. Why would anyone ever want to transact in such a contract? Do we actually see    prepaid forward contracts in the real world, or only in finance textbooks? 
+  
+    + For a prepaid forward contract where there are no dividends, the prepaid forward price is simply equal to the stock price today: $F_{0}^{P} = S_{0}$ The reason for this is because, regardless of whether you take physical possession of the stock in time 0,1,2,3, etc, you still own the exact same stock, so when you do physically take posession its as if you've owned it the entire time.  Dividends complicate this, because if there are dividends there would be a benefit to having physical possession of the stock.  
+  
+    + While I don't know if they actually occur, I have thought of some reasons why someone would want to enter into a prepaid forward contract.  The first is for tax purposes.  There could be situations where someone wants to buy something today, but not pay taxes on it until a later date. For example, suppose an investor thinks that the price of a stock is going to significantly increase in the next year.  A prepaid forward contract would allow him to pay for the asset today, but avoid paying the capital gains taxes resulting from the increase in the stock's value because he hasn't taken physical posession of it.  The oppsoite situtaion could be true for the seller of an asset.   
+      A second reason involves credit risk.  If the buyer has questionable credit, the seller may want to enter into a prepaid forward contract to ensure that they will receive their money, regardless of when the asset is to be delivered.
+      
+      Third, a seller may want to engage in short selling.  If they have sold the asset but still have physical possession of it, they could then "borrow" it, sell it and buy another to replace it.  
+      A last potential reason is that a seller may want to sell an asset, but use it for an additional length of time before physically relinquishing it. For example, suppose an investor approaches a farmer to buy his land and equipment.  The farmer would like to sell, but has entered into forward contracts for his corn and wheat, which must be delivered in 6 months.  A prepaid forward contract would allow the farmer to sell his farm, but keep possession of it until he has met his prior commitments.  
+  
+2.  In the Midterm folder on Canvas there is a subfolder titled Data. In it you will find historical nearby daily settlement prices for the Class III Milk (ticker symbol DL) and Cheese (ticker symbol BJ) futures traded on the CME for the period January 1, 2016 - December 31, 2016. Using these data answer the following questions:
+
+  * (a) Test the series for unit roots using the Augmented Dickey-Fuller test. Conduct the tests for prices in levels, and first price differences. Also conduct the test in log-price levels and  log-price first differences. What do you conclude? Do any of the series contain a unit root?  Which ones? Are the results what you expected, or did they surprise you?
+  
+    + For milk and cheese prices and the log milk and cheese prices, I failed to reject the null hypothesis, indicating that there is a unit root and they are non-stationary.  For the price differences and log price differences, I rejected the null hypothesis, indicating that the price differences are stationary.  These results are as expected, because prices are expected to be unforcastable and resemble a random walk, and therefore should be non-stationary.  The differences, however, should be forecastable and it should be expected that they would be stationary.  
+
+```{r}
+raw.data <- read.csv("E:\\Spring 2017\\Dr Broughs Class\\Midterm Exam\\dairy.csv", header=T)
+head(raw.data)
+
+attach(raw.data)
+
+library(urca)
+
+mprices.diff <- diff(mprices)
+cprices.diff <- diff(cprices)
+
+adf.m <- ur.df(y=mprices, type = "drift", selectlags = "BIC")
+summary(adf.m)
+
+adf.c <- ur.df(y=cprices, type = "drift", selectlags = "BIC")
+summary(adf.c)
+
+adf.m.diff <- ur.df(y=mprices.diff, type = "drift", selectlags = "BIC")
+summary(adf.m.diff)
+
+adf.c.diff <- ur.df(y=cprices.diff, type = "drift", selectlags = "BIC")
+summary(adf.c.diff)
+
+ln.mprices <- log(mprices)
+ln.cprices <- log(cprices)
+ln.mprices.diff <- diff(ln.mprices)
+ln.cprices.diff <- diff(ln.cprices)
+
+adf.s <- ur.df(y=ln.mprices, type = "drift", selectlags = "BIC")
+summary(adf.s)
+
+adf.f <- ur.df(y=ln.cprices, type = "drift", selectlags = "BIC")
+summary(adf.f)
+
+adf.s.diff <- ur.df(y=ln.mprices.diff, type = "drift", selectlags = "BIC")
+summary(adf.s.diff)
+
+adf.f.diff <- ur.df(y=ln.cprices.diff, type = "drift", selectlags = "BIC")
+summary(adf.f.diff)
+
+```
+  
+  * (b) Make time series plots of the series in price levels, first differences, log-price levels, and log-price first differences.
+
+```{r}
+library(zoo)
+
+raw.dates <- c("2016/1/4", "2016/1/5", "2016/1/6", "2016/1/7", "2016/1/8", "2016/1/11", "2016/1/12", "2016/1/13", "2016/1/14", "2016/1/15", "2016/1/19", "2016/1/20",
+                                    "2016/1/21", "2016/1/22", "2016/1/25", "2016/1/26", "2016/1/27", "2016/1/28", "2016/1/29", "2016/2/2", "2016/2/3", "2016/2/4", "2016/2/5", "2016/2/8",
+                                    "2016/2/9", "2016/2/10", "2016/2/11", "2016/2/12", "2016/2/16", "2016/2/17", "2016/2/18", "2016/2/19", "2016/2/22", "2016/2/23", "2016/2/24", 
+                                    "2016/2/25", "2016/2/26", "2016/2/29", "2016/3/1", "2016/3/2", "2016/3/3", "2016/3/4", "2016/3/7", "2016/3/8", "2016/3/9", "2016/3/10", "2016/3/11", "2016/3/14", 
+                                    "2016/3/15", "2016/3/16", "2016/3/17", "2016/3/18", "2016/3/21", "2016/3/22", "2016/3/23", "2016/3/24", "2016/3/28", "2016/3/29", "2016/3/30", "2016/3/31",
+                                    "2016/4/1", "2016/4/4", "2016/4/5", "2016/4/6", "2016/4/7", "2016/4/8", "2016/4/11", "2016/4/12", "2016/4/13", "2016/4/14", "2016/4/15", "2016/4/18", "2016/4/19", "2016/4/20", 
+                                    "2016/4/21", "2016/4/22", "2016/4/25", "2016/4/26", "2016/4/27", "2016/4/28", "2016/4/29", "2016/5/3", "2016/5/4", "2016/5/5", "2016/5/9", "2016/5/10", "2016/5/11", 
+                                    "2016/5/12", "2016/5/13", "2016/5/16", "2016/5/17", "2016/5/18", "2016/5/19", "2016/5/20", "2016/5/23", "2016/5/24", "2016/5/25", "2016/5/26", "2016/5/27", 
+                                    "2016/5/31", "2016/6/1", "2016/6/2", "2016/6/3", "2016/6/6", "2016/6/7", "2016/6/8", "2016/6/9", "2016/6/10", "2016/6/13", "2016/6/14", "2016/6/15", "2016/6/16", "2016/6/17",
+                                    "2016/6/20", "2016/6/21", "2016/6/22", "2016/6/23", "2016/6/24", "2016/6/27", "2016/6/28", "2016/6/29", "2016/6/30", "2016/7/1", "2016/7/5", "2016/7/6", "2016/7/7", "2016/7/8", 
+                                    "2016/7/11", "2016/7/12", "2016/7/13", "2016/7/14", "2016/7/15", "2016/7/18", "2016/7/19", "2016/7/20", "2016/7/21", "2016/7/22", "2016/7/25", "2016/7/26", "2016/7/27", 
+                                    "2016/7/28", "2016/7/29", "2016/8/2", "2016/8/3", "2016/8/4", "2016/8/5", "2016/8/8", "2016/8/9", "2016/8/10", "2016/8/11", "2016/8/12", "2016/8/15", "2016/8/16", "2016/8/17", "2016/8/18", 
+                                    "2016/8/19", "2016/8/22", "2016/8/23", "2016/8/24", "2016/8/25", "2016/8/26", "2016/8/29", "2016/8/30", "2016/8/31", "2016/9/1", "2016/9/2", "2016/9/6", "2016/9/7","2016/9/8", "2016/9/9", 
+                                    "2016/9/12", "2016/9/13", "2016/9/14", "2016/9/15", "2016/9/16", "2016/9/19", "2016/9/20", "2016/9/21", "2016/9/22", "2016/9/23", "2016/9/26", "2016/9/27", "2016/9/28", 
+                                    "2016/9/29", "2016/9/30", "2016/10/4", "2016/10/5", "2016/10/6", "2016/10/7", "2016/10/10", "2016/10/11", "2016/10/12", "2016/10/13", "2016/10/14", "2016/10/17", "2016/10/18", "2016/10/19", 
+                                    "2016/10/20", "2016/10/21", "2016/10/24", "2016/10/25", "2016/10/26", "2016/10/27", "2016/10/28", "2016/10/31", "2016/11/1", "2016/11/2", "2016/11/3", "2016/11/4", "2016/11/7", "2016/11/8", "2016/11/9", "2016/11/10", 
+                                    "2016/11/11", "2016/11/14", "2016/11/15", "2016/11/16", "2016/11/17", "2016/11/18", "2016/11/21", "2016/11/22", "2016/11/23", "2016/11/25", "2016/11/28", "2016/11/29", "2016/11/30", "2016/12/1", 
+                                    "2016/12/2", "2016/12/5", "2016/12/6", "2016/12/7", "2016/12/8", "2016/12/9", "2016/12/12", "2016/12/13", "2016/12/14", "2016/12/15", "2016/12/16", "2016/12/19", "2016/12/20", "2016/12/21", "2016/12/22", "2016/12/23", 
+                                    "2016/12/27", "2016/12/28", "2016/12/29", "2016/12/30", "2016/12/31")
+dates <- as.Date(raw.dates)
+dates
+
+raw.dates.2 <- c("2016/1/5", "2016/1/6", "2016/1/7", "2016/1/8", "2016/1/11", "2016/1/12", "2016/1/13", "2016/1/14", "2016/1/15", "2016/1/19", "2016/1/20",
+               "2016/1/21", "2016/1/22", "2016/1/25", "2016/1/26", "2016/1/27", "2016/1/28", "2016/1/29", "2016/2/2", "2016/2/3", "2016/2/4", "2016/2/5", "2016/2/8",
+               "2016/2/9", "2016/2/10", "2016/2/11", "2016/2/12", "2016/2/16", "2016/2/17", "2016/2/18", "2016/2/19", "2016/2/22", "2016/2/23", "2016/2/24", 
+               "2016/2/25", "2016/2/26", "2016/2/29", "2016/3/1", "2016/3/2", "2016/3/3", "2016/3/4", "2016/3/7", "2016/3/8", "2016/3/9", "2016/3/10", "2016/3/11", "2016/3/14", 
+               "2016/3/15", "2016/3/16", "2016/3/17", "2016/3/18", "2016/3/21", "2016/3/22", "2016/3/23", "2016/3/24", "2016/3/28", "2016/3/29", "2016/3/30", "2016/3/31",
+               "2016/4/1", "2016/4/4", "2016/4/5", "2016/4/6", "2016/4/7", "2016/4/8", "2016/4/11", "2016/4/12", "2016/4/13", "2016/4/14", "2016/4/15", "2016/4/18", "2016/4/19", "2016/4/20", 
+               "2016/4/21", "2016/4/22", "2016/4/25", "2016/4/26", "2016/4/27", "2016/4/28", "2016/4/29", "2016/5/3", "2016/5/4", "2016/5/5", "2016/5/9", "2016/5/10", "2016/5/11", 
+               "2016/5/12", "2016/5/13", "2016/5/16", "2016/5/17", "2016/5/18", "2016/5/19", "2016/5/20", "2016/5/23", "2016/5/24", "2016/5/25", "2016/5/26", "2016/5/27", 
+               "2016/5/31", "2016/6/1", "2016/6/2", "2016/6/3", "2016/6/6", "2016/6/7", "2016/6/8", "2016/6/9", "2016/6/10", "2016/6/13", "2016/6/14", "2016/6/15", "2016/6/16", "2016/6/17",
+               "2016/6/20", "2016/6/21", "2016/6/22", "2016/6/23", "2016/6/24", "2016/6/27", "2016/6/28", "2016/6/29", "2016/6/30", "2016/7/1", "2016/7/5", "2016/7/6", "2016/7/7", "2016/7/8", 
+               "2016/7/11", "2016/7/12", "2016/7/13", "2016/7/14", "2016/7/15", "2016/7/18", "2016/7/19", "2016/7/20", "2016/7/21", "2016/7/22", "2016/7/25", "2016/7/26", "2016/7/27", 
+               "2016/7/28", "2016/7/29", "2016/8/2", "2016/8/3", "2016/8/4", "2016/8/5", "2016/8/8", "2016/8/9", "2016/8/10", "2016/8/11", "2016/8/12", "2016/8/15", "2016/8/16", "2016/8/17", "2016/8/18", 
+               "2016/8/19", "2016/8/22", "2016/8/23", "2016/8/24", "2016/8/25", "2016/8/26", "2016/8/29", "2016/8/30", "2016/8/31", "2016/9/1", "2016/9/2", "2016/9/6", "2016/9/7","2016/9/8", "2016/9/9", 
+               "2016/9/12", "2016/9/13", "2016/9/14", "2016/9/15", "2016/9/16", "2016/9/19", "2016/9/20", "2016/9/21", "2016/9/22", "2016/9/23", "2016/9/26", "2016/9/27", "2016/9/28", 
+               "2016/9/29", "2016/9/30", "2016/10/4", "2016/10/5", "2016/10/6", "2016/10/7", "2016/10/10", "2016/10/11", "2016/10/12", "2016/10/13", "2016/10/14", "2016/10/17", "2016/10/18", "2016/10/19", 
+               "2016/10/20", "2016/10/21", "2016/10/24", "2016/10/25", "2016/10/26", "2016/10/27", "2016/10/28", "2016/10/31", "2016/11/1", "2016/11/2", "2016/11/3", "2016/11/4", "2016/11/7", "2016/11/8", "2016/11/9", "2016/11/10", 
+               "2016/11/11", "2016/11/14", "2016/11/15", "2016/11/16", "2016/11/17", "2016/11/18", "2016/11/21", "2016/11/22", "2016/11/23", "2016/11/25", "2016/11/28", "2016/11/29", "2016/11/30", "2016/12/1", 
+               "2016/12/2", "2016/12/5", "2016/12/6", "2016/12/7", "2016/12/8", "2016/12/9", "2016/12/12", "2016/12/13", "2016/12/14", "2016/12/15", "2016/12/16", "2016/12/19", "2016/12/20", "2016/12/21", "2016/12/22", "2016/12/23", 
+               "2016/12/27", "2016/12/28", "2016/12/29", "2016/12/30", "2016/12/31")
+dates.2 <- as.Date(raw.dates.2)
+
+plot(dates, mprices, xlab="date", ylab="Prices", main="Time Series in Price Levels", col="Blue")
+lines(dates, cprices, col="Orange")
+
+plot(dates.2, mprices.diff, xlab="date", ylab="prices", main="Time Series in Price Differences")
+lines(dates.2, cprices.diff, col="Green")
+
+plot(dates, ln.mprices, xlab="date", ylab="Prices", main="Time Series in Log Prices", col="Red")
+lines(dates, ln.cprices)
+
+plot(dates.2, ln.mprices.diff, xlab="date", ylab="Prices", main="Time Series in Log Price Differences")
+lines(dates.2, ln.cprices.diff)
+
+```
+  
+  * (c) Carry out the Engle-Granger two-step procedure to test for cointegration between the series?  What are the results? Are the series cointegrated? If so, what is the cointegrating vector?  Carefully explain.
+  
+    + The reults indicate that there is stationarity between the prices of milk and cheese.  Therefore, we can conclude that they are cointegrated.  The cointegrating vector is [1, -1.22]. Their cointegration is not surprising.   Because of their relationship--milk is used to make cheese--you would expect this to occur.
+
+```{r}
+fit <- lm(ln.mprices ~ ln.cprices)
+summary(fit)
+
+par(mfrow = c(1,1))
+
+resid <- fit$residuals
+plot(resid, type = "b", lwd = 3, col = "blue", main = "Engle-Granger Step 1 Residuals")
+
+adf.resid <- ur.df(resid, type = "drift", selectlags = "BIC")
+summary(adf.resid)
+
+
+```
+
+  * (d) Using the Class III Milk contract as though it were the spot price calculate the minimum-variance hedge ratio. How does this analysis differ from the cointegration results? 
+  
+    + The Mimimum variance hedge ratio is 1.217658.  
+  
+```{r}
+raw.data <- read.csv("dairy.csv")
+attach(raw.data)
+head(raw.data)
+
+vars <- names(raw.data)
+
+ln.m <- log(mprices)
+ln.c <- log(cprices)
+
+plot(ln.m, lwd = 2, type = "b", col = "red", main = "Log Milk & Cheese Prices")
+lines(ln.c, lwd = 2, type = "l", col="Blue")
+
+ln.m.diff <- diff(ln.m)
+ln.c.diff <- diff(ln.c)
+
+plot(ln.m.diff, lwd = 2, type = "b", col = "red", main = "Log-Differenced Milk & Cheese Prices")
+lines(ln.c.diff, lwd = 2, type = "l", col = "blue")
+
+vol.m <- sd(ln.m)
+vol.c <- sd(ln.c)
+
+rho <- cor(ln.m, ln.c)
+
+h.star <- rho * (vol.m / vol.c)
+h.star
+
+```
+
+3.  In this problem you will simulate values for spot prices and basis for heating oil and gasoline following the models of Bollen and Whaley in their paper \textit{Simulating Supply} (which is in the readings file). Specifically, the follow models will be used:
+
+Spot Prices:
+  
+  * $\ln{\left(\frac{S_{i,t}}{S_{i,t-1}}\right)} = \alpha_{i} (\beta_{i} - S_{i,t-1}) + \varepsilon_{i,t} \quad
+  \mbox{for} \quad i = 1, 2$
+  
+  * where $i=1$ for heating oil and $i=2$ for gasoline, and $\varepsilon_{1}, \varepsilon_{2} \sim BVN(0, \sigma_{1}^{2}, 0, \sigma_{2}^{2}, \rho)$. And $\rho$ is the correlation coefficient between heating oil and gas spot returns.
+  
+Basis and Future Prices:
+
+  * $b_{i,t} = \alpha_{i} b_{i,t-1} + \beta_{i} S_{i,t-1} + \varepsilon_{i,t} \quad \mbox{for} \quad i = 1,2$ 
+  
+  * where again, $i = 1$ for heating oil and $i = 2$ for gasoline and $\varepsilon_{1}, \varepsilon_{2}) \sim BVN(0, \sigma_{1}^{2}, 0, \sigma_{2}^{2}, \rho)$. Again, $\rho$ is the correlation between heating oil and
+  gasoline basis.
+  
+  * You can then obtain simulated futures prices as $F_{i,t} = S_{i,t}e^{b_{i,t}}$ for $i = 1,2$ 
+  
+With this as background, do the following: 
+
+  * (a) Simulate 45 days of prices for spot and daily settlement prices for futures (via the basis equation).  Looking at figure $1$ in the paper use initial values of $\$0.69$ for heating oil and $\$0.80$ for  gasoline. Use an initial value for heating oil basis of $-0.02$ and $-0.01$ for gasoline.  See Table $2$ in the paper for the other parameter values.
+  
+```{r}
+raw.data <- read.csv("E:\\Spring 2017\\Dr Broughs Class\\Midterm Exam\\Dates.csv", header=T)
+head(raw.data)
+
+str(raw.data)
+alpha.oil = 0.342
+beta.oil = 0.539
+sigma.oil = .11
+S.oil.0 = 0.69
+nreps = 45
+
+alpha.gas = 0.391
+beta.gas = 0.560
+sigma.gas = 0.116
+s.gas.0 = 0.80
+rho = 0.705
+
+ln.spot.oil <- rep(0, nreps)
+ln.spot.oil[1] <- log(S.oil.0)
+
+ln.spot.gas <- rep(0, nreps)
+ln.spot.gas[1] <- log(s.gas.0)
+
+z1 <- rnorm(nreps)
+z2 <- rnorm(nreps)
+
+for(t in 2:nreps)
+{
+  ln.spot.oil[t] <- ln.spot.oil[t-1] + alpha.oil * (beta.oil - exp(ln.spot.oil[t-1])) + z1[t] * sigma.oil
+  
+  spot.oil <- exp(ln.spot.oil)
+  
+  ln.spot.gas[t] <- ln.spot.gas[t-1] + alpha.gas * (beta.gas - exp(ln.spot.gas[t-1])) + (rho * (z1[t] * sigma.oil)) + (sqrt(1-rho^2) * z2[t] * sigma.gas)
+  
+  spot.gas <- exp(ln.spot.gas)
+}
+
+
+alpha.b.oil = 0.663
+beta.b.oil = -0.009
+sigma.b.oil = 0.025
+b.oil.0 = -0.02
+
+alpha.b.gas = 0.424
+beta.b.gas = -0.015
+sigma.b.gas = 0.029
+b.gas.0 = -0.01
+
+rho.b = -0.358
+
+z1.b <-rnorm(nreps)
+z2.b <- rnorm(nreps)
+
+basis.oil <- rep(0, nreps)
+basis.oil[1] <- b.oil.0
+
+basis.gas <- rep(0, nreps)
+basis.gas[1] <- b.gas.0
+
+
+for(t in 2:nreps)
+{
+  basis.oil[t] <- alpha.b.oil * basis.oil[t-1] + beta.b.oil * spot.oil[t-1] + z1.b[t] * sigma.b.oil
+  
+  basis.gas[t] <- alpha.b.gas * basis.gas[t-1] + beta.b.gas * spot.gas[t-1] + (rho * z1.b[t] * sigma.b.oil) + ((sqrt(1-rho^2)) *z2.b[t] * sigma.b.gas)
+}
+
+future.oil <- rep(0, nreps)
+future.gas <- rep(0, nreps)
+
+for(t in 1:nreps)
+{
+  future.oil[t] <- spot.oil[t] * exp(basis.oil[t])
+                            
+  future.gas[t] <- spot.gas[t] * exp(basis.gas[t])
+}
+
+
+```
+  
+  * (b) Make time series plots labeling the x-axis as date and the y-axis as dollar prices. Assume a starting date of November 15, 1991. Plot spot prices, basis, and futures prices separately but combining the graphs for
+ heating oil and gasoline together for each. Clearly label the
+series in each graph.
+
+```{r}
+
+library(zoo)
+
+dates <- seq(from = as.Date("1991/11/15"), length.out = 45, by = "day")
+
+plot(dates, spot.oil, xlab="date", ylab="dollar prices", main="Spot Prices", lwd=2, type="l", col="Blue")
+lines(dates, spot.gas, col="Yellow")
+
+plot(dates, basis.oil, xlab="date", ylab="dollar prices", main="Basis Prices", lwd=2, type="l", col="Green")
+lines(dates, basis.gas, col="Red")
+
+plot(dates, future.oil, xlab="date", ylab="dollar prices", main="Futures Prices", lwd=2, type="l")
+lines(dates, future.gas, col="Orange")
+
+
+```
+
+  * (c) For the simulated 45-day period calculate the market-to-market cash flows. Assume and initial margin of $10\%$ and variation margin of $85\%$ of the initial margin. Assume a position of 1 contract for each position.
+ 
+    + Please see Excel spreadsheet Mark to Market for calculations.
+ 
+  * (d) For the simulated 45-day period calculate a minimum-variance hedge ratio for both heating oil and unleaded gasoline.
+    
+    + Minimum variance hedge for heating oil is 0.9569803, and 0.996247 for unleaded gasoline.  
+
+```{r}
+ln.future.oil <- log(future.oil)
+
+vol.oil.s <- sd(ln.spot.oil)
+vol.oil.f <- sd(ln.future.oil)
+
+oil.rho <- cor(ln.spot.oil, ln.future.oil)
+
+oil.h.star <- oil.rho * (vol.oil.s / vol.oil.f)
+oil.h.star
+
+ln.future.gas <- log(future.gas)
+
+vol.gas.s <- sd(ln.spot.gas)
+vol.gas.f <- sd(ln.future.gas)
+
+gas.rho <- cor(ln.spot.gas, ln.future.gas)
+
+gas.h.star <- gas.rho * (vol.gas.s / vol.gas.f)
+gas.h.star
+
+```
+
+4.  Describe the institutional differences between forward markets and futures markets. Describe the historical evolution of futures markets and the institutional features that define futures markets. Why have they developed the way they have? What market problems have they solved?
+
+  * A futures contract is an exchange traded forward contract.  Whereas forwards contracts  are traded over the counter via dealers or some other method (other than an exchange), futures contracts are sold via an exchange.  Forward contracts can be customized, but futures contracts are more standardized. Futures contracts also have clearing houses, which act as an intermediary between the buyer and the seller.  Clearing houses guarentee each position, and, coupled with the fact that each contract is settled daily through marking to market, has resulted in a very low level of risk.  
+  
+  * Like many things in finance, futures markets were actually developed as a result of a problem.  The initial problem was uncertainty.  The farmers brought their crops to a city, such as Chicago, to sell them to a dealer.  The farmer didn't know how much he would get for his crops, while the dealer did not know what quantity of wheat, corn, etc. he would be able to obtain to resell.   As a result of this, forward markets were born.  Farmers knew in advance the price they would get for their crops, and the dealer knew what price he would have to pay and what quanitity he would receive.  
+  
+  * The next problem that arose was credit risk.  If the price of corn rose dramatically, what incentive did the farmer have to keep the terms of his contract rather than selling his corn at a much higher price to a different dealer? It soon became apparent that oversight was needed, and the exchanges, such as the CME and New York Cotton exchange, emerged.  Futures contracts began being traded these exchanges.      
+  
+  * Futures markets have developed the way they have to meet needs, solve problems, and make the market more efficient.  As needs, problems, and inefficiencies have arisen, markets have changed and evolved to remedy them.  
+
+5.  Consider the paper that was presented in class by Liu titled \textit{Price Relations Among Hog, Corn, and Soybean Meal Futures}.
+
+  * (a) What were the main empirical findings of the paper? What  statistical and econometric methods were used by the author? Were you persuaded by author's evidence?
+    
+    + In this paper, the author finds that hog, corn, and soybean meal futures are cointegrated.  He further finds that there are tendencies for the hog spread to revert to its long run equilibrium.  The simulations he ran demonstrated the ability to make a significant profit during both the short and the long run, indicating inefficiency in the three futures markets as well as an inability to completely incorporate reversion to the mean.  Lastly, he finds that although the hog component of the spread accounts for the majority of the trading profits, the corn and soybean meal components are also important as they help to reduce trading risks.  
+  
+    + The statistical and econometric methods that were used were staionarity and unit root tests, multivariate cointegration tests, and the error correction model.
+    
+    + I found the author's evidence to be quite compelling.  I feel like one of the main ideas I have gleaned from this class so far is that markets are always working towards equilibrium, but never quite get there, and that this is what allows markets to function.  The trading stratey suggested by Lui is indicative of such a process.  
+    
+  * (b) At the beginning of the course we read the appendix on the history of thought on equilibrium concepts in economics from Culp's book Risk
+Transfer, in which the author states ``it becomes quite hard to explain a lot of financial and derivatives market activity without being a little bit Austrian.'' How does that idea apply to the empirical findings of Liu? Do you
+think that statement is true? Can you give Liu's econometric model (the error-correction model) a neo-Austrian interpretation?
+
+    + The idea that you have to be a bit Austrian to explain market activity fits quite nicely with the empirical findings of Lui.  He found evidence of an equilibrium process, which is a very Austrian idea.
+    
+    + I do think that this statement is true.  The idea that markets are always efficient and prices are always accurate seems a bit naive to me.  This would mean that arbitrage opportunities don't exist--ever! If this were the case, why would such things as hegde funds exist?  And if they were somehow able to develop, how would they survive? In everyday life, if you are watching for it, you will see arbitrage everywhere,in all aspects and facets of life.  This leads me to be a stong supporter of the process of equilibrium. 
+    
+    + According to wikipedia, error correction models directly estimate the speed at which a dependent variable returns to equilibrium after a change in other variables.  This model holds with the classical view of economics because it is math based, rather than being based on thinking alone.  However, the 'error correction' part of it suggest disequilibrium, which brings an Austrian flavor into the model.  
+    
+  * (c) At the end of the paper Liu conducts some trading simulations. Outline  the methodology that Liu uses to conduct these trading simulations. Why is that necessary? Do you  find the simulations convincing? Would you place real money on his trading model? If not, what would it  take to convince you that the model really is predictive of abnormal profits? 
+  
+    + The trading strategy suggested by Lui is that there is a hog spread, and anytime things deviate from the spread you know that it will revert back to the spread.  Therefore, you can either buy or sell the hog spread, depending on the circumstances, and make a profit.  To sell the hog spread, you would buy hog futures and sell corn and soybean futures.  You would do this if the spread was above long run equilibrium. To buy the hog spread, you would buy the corn and soybean futures, and sell hog futures.  If the spread was below long run equilibrium, this would be the proper trading strategy to employ.  When the spread has returned to long run equilibrium, these positions would need to be closed.  
+  
+    + Yes, I find the simulations convincing and would be willing to place real money on this trading model.  I think it is very logical and inherently, it make sense to me.
+  
+6.  In class we discussed the case of oil hedging by Metalgesellschaft (MG). In their paper Metalgesellschaft and the Economics of Synthetic Storage Culp and Miller defended MG's hedging strategy. Pirrong strongly criticized Culp and Miller's findings in his paper \textit{Metalgesellschaft: Prudent Hedger Ruined, or a Wildcatter on NYMEX?}. Please answer the following questions about the debate over MG's hedging strategy.
+
+  * (a) Culp \& Miller called MG's main hedging strategy Synthetic Storage. Please outline the basics of this strategy, and explain how it differs from risk minimizing hedging. In your explanation, you may want to reference the ideas of the economist Holbrook Working cited by Culp \& Miller regarding hedging strategies and the motives for hedging.
+  
+    + MG was hedging its long term delivery commitments to its customers with a stack of short dated futures, which they continually rolled over as the contracts matured.  They were synthetically storing petroleum, as opposed to physically storing it, because they were artificially creating storage through other instruments. If using synthetic storage, you don't have to actually physically store something because you own a future on it.  You don't ever physically take possession of the asset because you close out the position before delivery takes place.  
+      The strategy used by MG, operational hedging, is meant to profit by anticipating changes in the relationships between prices (such as the basis).  Therefore, someone engaging in this strategy would not be exposed to spot price risk.  Minimum variance hedging is meant to profit by anticipating changes in absolute prices.  Firms who engage in mimimum variance hedging do so in order to reduce risks, such as costs in the event of financial distress and variability of cash flows.  
+    
+  * (b) One of the main points of disagreement between Culp \& Miller and their critics, especially Pirrong, is over the proper hedge ratio for MG's hedging strategy. What do you think the correct hedge ratio was for MG? Can you outline an empirical strategy for estimating the proper hedge ratio? Explain.
+  
+   + I think that it is a little puzzling that Pirrong & Culp & Miller are even having this debate.  Because they were assuming different types of hedging strategies, and these strateges have different purposes, it should be expected that they would have different hedge ratios.  Throughout his article, Pirrong mentions things such as "a variance minimizing hedger should..." and "a one-for-one hedge is not variance minimizing."  Why is he using such vocabulary if the goal of operational hedging is not to avoid or minimize risk?  In fact, Holbrook Working states that when in engaing in operational hedging 'the amount of risk reduction accomplished tends to be small.' It seems like Pirrongs argument is not grounded in the facts of the situation.  
+      Having said all that, I feel that the proper hedge ratio was somewhere in between the two.  In order to emperically estimate this, I would employ the optimal hedge ratio: $h^{*} = \rho * \frac{\sigma_s}{\sigma_F}$. I would solve this by regressing the spot returns on the future returns, and the slope would be my estimate.  
+  
+  * (c) At the end of his paper, Pirrong states ``Given the huge losses incurred in late 1993, a Bayesian estimating the probability distribution of MG's information advantage would almost certainly place little weight on the possiblity that the firm was well informed, and great weight on the possibility that it did not possess superior information, regardless of the charitability of his priors concerning the prescience of MG's managers.'' Why do you think Pirrong invokes Bayes' Rule? Comment on this statement by Pirrong.
+  
+    + I think that Pirrong invoked Bayes' Rule because he believes that if MG was well informed and possessed superior information, their prior would have reflected this.  In Pirrong's opinion, the prior of MG should have led them to have a much lower and less risky hedging strategy.  
+    
+    + The prior of Culp and Miller is that MG's hedging strategy was sound, while the prior of Pirrong was that MG hedging strategy was too risky.  With this in mind, I am going to use Bayes Rule to calculate how observed data influences the prior distribution, resulting in the posterior.    
+  
+      + For the puproses of this exercise, I am assuming that $P(H) = 0.5$ and $P(H^{*}) = 0.5$.  I am also assigning the following values: $P(E_1 | H) = .25$ and $P(E_1 | H^{*}) = .75$.  The reason I chose these values is because the probability of Pirrong finding that the optimal minimum-variance hedge ratio differs markedly from MG's 1-for-1 heding policy is lower if MG's hedging strategy was entirely sound, but higher if MG's hedging strategy was wildly speculative.  
+  
+    + Given this information, I can know solve for $P(E_1)$:
+    
+$$
+P(E_1) = P(E_1 | H) * (P | H) + P(E_1 | H^{*}) * P(H^{*})
+$$
+$$
+P(E_1) = .25*.5 + .75*.5 = .5
+$$
+     + I will now use Bayes' Rule to calculate $P(H | E_{1})$ given the above stated values:
+    
+$$
+P(H | E_{1}) = \frac{P(E_1 | H) * P(H)}{P(E_1)} 
+$$
+$$
+P(H | E_1) = \frac{.4 * .5} {.5} = .4
+$$
+      + The result of this Bayseian updating is that the postier has become .4.  This indicates to me that Pirrong's evidence was not overly compelling, as it didn't significantly decrease the value.    
+      
+      + Next, I will use the same procedure to process the evidence $E_{2}$.  In this case, the posterior from above will become my new prior, so $P(H) = 0.4$ and $P(H^{*}) = 0.6$.
+I am also assigning the following values: $P(E_2 | H) = .75$ and $P(E_2 | H^{*}) = .25$.  The reason I chose these values is because the likelihood of Bollen & Whaley finding that MG's strategy was almost always profitable is higher if MG's hedging strategy was entirely sound, but lower if MG's hedging strategy was wildly speculative.
+Given this information, I can know solve for $P(E_2)$
+$$
+P(E_2) = P(E_2 | H) * (P | H) + P(E_2 | H^{*}) * P(H^{*})
+$$
+
+$$
+P(E_2) = .75 *.4 + .25 * .6 = .45
+$$
+    + I will now use Bayes' Rule to calculate $P(H | E_{2})$ given the above stated values:
+    
+$$
+P(H | E_{2}) = \frac{P(E_2 | H) * P(H)}{P(E_2)}
+$$
+$$
+P(H | E_2) = \frac{.75 * .4} {.45} = .6667
+$$
+    + Based on this, my updated posterior belief is .6667.  This tells me that MG's hedging strategy was more prudent than it was risky.  I want to point out that this is based on the fact that each original outcome was equally likely. In reality, I think that P(H) should have been higher, meaning that $P(H^{*})$ would have been lower.  I believe this based on the type of hedging MG was involved in.  They were not hedging to avoid risk, but to speculate in the basis.  Changing these values would result in a higher ending posterior value, which further confirms the conclusion that MG's strategy was sound.    
+    
+  
+  * (d) Energy markets such as the oil market are often historically characterized by backwardation, but have also had long periods of contango. Does that matter for MG's synthetic storage strategy? Explain.
+  
+    + Yes, it does, because they are speculating in the basis and not in absolute prices.  In this case, long peroids of contago would lead to MG losing money.  In order for them to make money, it would require long term backwardation.    
+    
+  * (e) In answering these questions you may want to also reference other papers, such as any of the  other readings that we have done in class (Hayek, Nau, Grossman \& Stiglitz, etc). Additionally, I will place two other papers related
+to this question in the readings files. The first is \textit{Rethinking Risk Management} by Rene Stulz, and the second is \textit{Simulating Supply} by
+Bollen and Whaley. These are not necessarily required, but you may find them helpful in framing the discussion and your answers. 
+
+
+7.  Consider the following two papers:
+
+
+  * Orange Juice and Weather by Richard Roll.  
+  * Is Sound Just Noise?  by Coval \& Shumway. 
+
+Both papers deal with the informational role of prices in a market setting. Relate the findings of each  paper to the main idea in Hayek's paper \textit{The Use of Knowledge in Society}. Does the evidence in the article support Hayek's main thesis? If so, how? Explain. Be careful to give an economic interpretation to  any statistical or econometric measure used in the article. Also, explain the data that were used in the respective study.
+
+In Hayek's paper, his main point is that knowledge in society is never complete, and cannot possibly be contained in the mind of one single person. According to Hayek, the solution to this problem is the price system.  Prices are set through the medium of the market, and the market allows knowledge that is pertinent to each person and circumstance to be disseminated.  Although all relevant information is contained within the price, each participant generally only needs to know a small fraction of this information in order to make the correct economic decision.  
+
+The paper by Coval and Shumway is supportive of Hayek's main thesis. They suggest that there are things that happen in the pit that have the ability to contribute information, and therefore effect pricing, in a unique way. They indicate that the noise level in the pit, non-verbal signals such as hand signals and traders jumping up and down, and emotions such as fear and anxiety are all ways to provide additional relevant information.  This information contributes to market efficiency, and the ability of the price system to accurately convey prices.  They further suggest that the pit is a neccessary component to proper efficiency in the market.  Electronic trading leads to some information loss.    Knowledge from prices, transactions, and news annoucements are not sufficient, but must be supplemented with further knowledge that can only be obtained in environments such as the pit. 
+
+    
+The authors collected their data by placing a microphone in the Chicago Board of Trade bond pit over a two month period.  They took a second by second sound recording, and analyzed this data in conjunction with price and trading volume data from the CBOT.  They took this data and ran regressions in order to get their results.
+
+    
+Coval and Shumway found that the noise levels in the pit were especially loud right after the market opened, and right before it closed.  This same pattern was observed in the number of price changes and the trading volume. This leads me to believe that a higher noise level is related to a greater number of price changes and a greater number of trades, and vice versa.   From their summary statistics they found that the average number of contracts traded per minute was highly skewed, suggesting abnormal distribution.  
+
+    
+The paper by Richard Roll also supports Hayek's thesis.  His findings show that the prices and returns of orange juice more accurately predict weather than the weather predictions themselves!  This indicates that markets are efficient, and that they relay all available information.  He further finds that, when market inefficiencies were found, they were caused by placing limits on price movements. These limits had the effect of not allowing all available information to be reflected in the prices, leading to market inefficiency.  
+
+    
+Roll also alludes to the Hayekian idea of 'the man on the spot.'  In this case, the orange growers who enter into futures contracts are the 'man on the spot.'  They may not know the science and methods behind weather predictions, but they know oranges!  As it turns out, this knowlege of oranges causes them to more accurately predict the weather than those who have a knowledge of weather prediction.  
+    
+
+The data used in this study was price data for orange juice futures contracts from October 1975 through December 1981.  This data was then whittled down to two contracts, and equally weighted average daily returns of these contracts was then used as the orange juice return in further analysis.  Using this data, the author runs a regression involving forecasted and actual temperature and return on orange juice futures contracts.  
+
+    
+Roll found a very large standard deviation when computing his mean OJ returns, suggesting a high degree of volatility.  He further indicates that weather is the most significant influence on the orange crop, yet it only explains a small part of the volatility in OJ prices.  No other factors were found that could explain this.  
+    
+8.  Read the paper Futures markets, Bayesian forecasting and risk modeling by Quintana, Carvalho, Scott, and Costigliola. Relate the main idea of the paper to the articles The Use of Knowledge in Society by Hayek and Arbitrage, Rationality, and Equilibrium by Nau and McCardle. I once stated in class that Nau's Arbitrage Choice Theory is the direct result of when a thoughtful Bayesian reads and understands Hayek. Can we interpret the Quintana et al paper in the same light (i.e. Bayesians taking
+Hayek seriously)? Explain.
+
+One of the main ideas of this paper is that markets are coherent and that this coherence is in part a result of information sharing.  The idea that markets are coherent can be likened to the Hayekian idea that markets are continually striving toward equilibrium.  This concept is also discussed by Nau & McCardle, who point out that optimization comes about through people taking advantage of arbitrage opportunites.  When markets are not in equilibrium, the exploitation of pricing descrepanies result in a move toward equilibrium.  It is also important to point out that the buying and selling of things is in and of itself a way of sharing information.
+
+
+Another belief held by Nau & McCardle is that the principle of no arbitrage is fundamental to Bayesian decision theory.  This is contrary to popular Bayesian belief that no arbitrage is supplemental.  Based on their article, I believe that Quintana, et al would agree with Nau & McCardle on this point. They alluded to this when they spoke about the idea that a Bayesian speculator could generate profits by trading based on the predictions of dynamic models.  
+    
+
+Another main point of this article is the idea of "coherent consensus expectations," and how this is accomplished through "market participants acting in concert." This can be likened to the pricing system spoken of by Hayek.  Nau also references this when he talks about "other peoples brains," and how pricing involves the knowlege of a conglomeration of people.   Esentially, the authors are saying the same things as Hayek.  The only difference is that they are viewing things through a Bayesian lens, discussing it through the medium of Bayesian speculation in a Bayesian market   
+  
+  
+In direct answer to the question, yes, I think we can say with some confidence that the Quintana, et all paper is the "direct result of when a thoughtful Bayesian reads and understands Hayek.""  Although the authors state things in a different way, their ideas and conclusions are similar to those of Hayek.    
+     
+9.  In class we have spoken about innovations in the derivatives markets. Consider the following:
+
+  * Weather derivatives are traded on many exchanges, including the CME: \url{http://www.cmegroup.com/trading/weather/}.
+  
+  * The Baltic Exchange in London is organized around the shipping industry and shipping risk management. The main contract is futures contract called Forward Frieght Agreements or FFAs. The exchange website is here: \url{https://www.balticexchange.com/}. The wikipedia article is also helpful: \url{https://en.wikipedia.org/wiki/Baltic_Exchange}.
+  
+  * In a partnership with the NASDAQ Financial exchange The New York Interactive Advertising Exchange for ad futures is starting up: \url{https://www.nyiax.com/}. See also the wikipedia article on ad exchanges for background: \url{https://en.wikipedia.org/wiki/Ad_exchange}.
+  
+  * Helyette Geman, a world expert in commodity markets and commodity derivatives, has written in her paper (with coauthor) titled \textit{Water as the Next Commodity} how water might someday be traded as other commodities are such as oil, coffee, etc. (The paper in the readings folder).
+  
+Comment on what you think will be the shape of innovations in derivatives markets in the next two decades. What things  that are not now traded on exchanges, or with derivatives do you think will be? How will this fascilitate global  commerce? Outline a business strategy that does not now exist that you think someday might soon exist if derivatives  markets are created. What is the role for data and data analysis in your proposal?
+
+  * I think that one of the most beneficial innovations that could take place in derivative markets is something that could reduce tax rate risk.  While I don't think the government would agree to enter into futures contracts to alleviate this risk, I do think that there could be a way to tranfer this risk to a third party that would be willing to sell and buy futures contract in this area.  
+  
+    The matter of uncertainty would not be whether tax rates are going to increase or decrease, but how much they would increase.  A business strategy for this type of scenario is as follows:
+    
+      + Suppose I would like to buy a forward contract for tax rates.  I believe that the tax rate is going to increase by 5% in 5 years.  If the current tax rate is 35%, I would enter into a 5 year forward contract to pay a tax rate of 40%.  If the tax rate is 38% at that point, I have lost money, but if it is 42% I have made money.  Either way, purchasing a forward contract would allow me to know with certainty what my tax rate would be in 5 years and make business decisons accordingly.  If I were the one selling the forward, I would make sure to hedge my risk appropriately.
+      
+      + Data and data analysis would be an integral part of this business strategy.  Both the seller and the buyer would need some type of basis for how they expect tax rates to move.  Tax law, government regulation, the political beliefs of government officials, etc would all need to be considered.  Based on this information, a probable future tax rate would need to be mathematically acheived.  
+      
+      + A derivative market like the one I am suggested would facilitate global commerce by securing tax rates and allowing corporations, both within and without the US, to know their tax liabilites in advance.  Lower tax liabilites would free up money that companies could then use to increase global commerce.  If the opposite turned out to be true, and buying futures increased tax liabilities, the business would still know in advance what thier tax bill would be and could take on projects or expand operations in ways that they previously would not have been able to do when faced with tax rate risk.  This could also lead to an increase in global commerce. 
+        
+  * Another innovation could be to allow individuals, rather than just businesses, to enter into forwards on a variety of things. Example include things such as education costs for their children, healthcare costs, and risks that are usually handled by insurance, such as disability and death.  Rather than paying insurance premiums, consumers could enter into a forward contract with a put option.  
+  
+    I think forwards relating to individual tax rates could also be beneficial.  This is especially true for people who have tax sheltered retirement accounts.  If they could know what their tax rate would be at retirement, it would help them in determining how much money they would need to save.     
+    
+    Creditworthiness could be a concern with individuals entering into forward contracts, but if someone were able to figure out a way around this I think derivates for individuals could improve market efficiency and provide more competitive prices. 
+  
+  
+  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
